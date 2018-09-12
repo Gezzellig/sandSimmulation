@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import random
 
 #Currently points[0][0] is the left top element
 #So it has max y and min x
@@ -9,7 +10,6 @@ class Point:
 		self.position = position
 
 	def add_spring(self, spring):
-		print("add springieee")
 		self.springs.append(spring)
 
 
@@ -25,11 +25,10 @@ class Spring:
 
 def calc_position(h, w, height, width):
 	field_size = 1.0
-	offset_factor = 0.1
-	y_offset = offset_factor*(field_size/(height+1))
-	x_offset = offset_factor*(field_size/(width+1))
-	y_pos = (field_size/(height+1))*(height-(h)) 
-	x_pos = (field_size/(width+1))*(w+1)
+	offset_x = 0.01
+	offset_y = 0.01
+	y_pos = (field_size/(height+1))*(height-(h)) + random.uniform(-offset_y, offset_y)
+	x_pos = (field_size/(width+1))*(w+1) + random.uniform(-offset_x, offset_x)
 	return (y_pos, x_pos)
 
 
@@ -50,7 +49,6 @@ def create_spring_with_check(h, w, height, width, point, points):
 	springconstant = 1.0
 	breakforce = 1.0
 	if not out_bounds(h, w, height, width):
-		print("create spring")
 		Spring(springconstant, breakforce, point, points[h][w])
 
 
@@ -81,20 +79,20 @@ def get_xs_ys(points):
 	return xs, ys
 
 
-def plot_springs_point(point):
-	print("plottt")
-	for spring in point.springs:
-		print("spring")
-		point1_y, point1_x = spring.point1.position
-		point2_y, point2_x = spring.point2.position 
-		if point1_y >= point2_y and point1_x <= point2_x:
-			plt.plot([point1_x, point2_x], [point1_y, point2_y], color='k', linestyle='-', zorder=1)
+def plot_spring(spring):
+	point1_y, point1_x = spring.point1.position
+	point2_y, point2_x = spring.point2.position 
+	plt.plot([point1_x, point2_x], [point1_y, point2_y], color='k', linestyle='-', zorder=1)
 
 
 def plot_springs(points):
+	unique_springs = set()
 	for row in points:
 		for point in row:
-			plot_springs_point(point)
+			for spring in point.springs:
+				unique_springs.add(spring)
+	for spring in unique_springs:
+		plot_spring(spring)
 
 
 def plot_points(points):
@@ -112,10 +110,6 @@ def plot_points(points):
 
 def main():
 	points = create_sqaure_point_grid()
-	print(points[0][0].position)
-	print(points[0][1].position)
-	print(points[1][1].position)
-	print(points[1][2].position)
 	plot_points(points)
 
 if __name__ == "__main__":
