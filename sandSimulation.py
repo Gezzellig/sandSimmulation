@@ -68,6 +68,45 @@ def create_sqaure_point_grid():
 	return points
 
 
+def calc_hex_position(h, w, height, width, even_row):
+	field_size = 1.0
+	offset_x = 0.01
+	offset_y = 0.01
+	y_pos = (field_size/(height+1))*(height-(h))# + random.uniform(-offset_y, offset_y)
+	if even_row:
+		w += 0.25
+	else:
+		w -= 0.25
+	x_pos = (field_size/(width+1))*(w+1)# + random.uniform(-offset_x, offset_x)
+	return (y_pos, x_pos)
+
+def create_hex_grid_points(height, width):
+	points = list()
+	for h in range(0, height):
+		points.append(list())
+		for w in range(0, width):
+			points[h].append(Point(calc_hex_position(h, w, height, width, h%2 == 0)))
+	return points
+
+
+def link_points_hex(height, width, points):
+	for h in range(0, height):
+		for w in range(0, width):
+			#MODIFY THIS STILLLLL
+			point = points[h][w]
+			create_spring_with_check(h+1, w, height, width, point, points)
+			create_spring_with_check(h, w+1, height, width, point, points)
+			create_spring_with_check(h, w+1, height, width, point, points)
+
+
+def create_hex_point_grid():
+	height = 10
+	width = 10
+	points = create_hex_grid_points(height, width)
+	#link_points_hex(height, width, points)
+	return points
+
+
 def get_xs_ys(points):
 	xs = list()
 	ys = list()
@@ -98,7 +137,7 @@ def plot_springs(points):
 def plot_points(points):
 	xs, ys = get_xs_ys(points)
 	plt.scatter(xs, ys, color="r", zorder=2)
-	plot_springs(points)
+	#plot_springs(points)
 	plt.show()
 
 
@@ -109,7 +148,7 @@ def plot_points(points):
 
 
 def main():
-	points = create_sqaure_point_grid()
+	points = create_hex_point_grid()
 	plot_points(points)
 
 if __name__ == "__main__":
