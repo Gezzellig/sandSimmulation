@@ -1,8 +1,15 @@
 import matplotlib.pyplot as plt
 import random
+import math
 
 #Currently points[0][0] is the left top element
 #So it has max y and min x
+
+class Grid:
+	def __init__(self, points, edge_points):
+		self.points = points
+		self.edge_points = edge_points
+
 
 class Point:
 	def __init__(self, position):
@@ -11,6 +18,12 @@ class Point:
 
 	def add_spring(self, spring):
 		self.springs.append(spring)
+		
+	def move(self, movement):
+		move_x, move_y = movement
+		x, y = self.position
+		pos = (x + (move_x*0.5), y + move_y*0.5)
+		self.position = pos
 
 
 class Spring:
@@ -27,9 +40,9 @@ def calc_position(h, w, height, width):
 	field_size = 1.0
 	offset_x = 0.01
 	offset_y = 0.01
-	y_pos = (field_size/(height+1))*(height-(h)) + random.uniform(-offset_y, offset_y)
-	x_pos = (field_size/(width+1))*(w+1) + random.uniform(-offset_x, offset_x)
-	return (y_pos, x_pos)
+	y_pos = (field_size/(height-1))*(height-(h-1)) + random.uniform(-offset_y, offset_y)
+	x_pos = (field_size/(width-1))*(w) + random.uniform(-offset_x, offset_x)
+	return x_pos, y_pos
 
 
 def create_points(height, width):
@@ -45,29 +58,41 @@ def out_bounds(h, w, height, width):
 	return h < 0 or w < 0 or h >= height or w >= width 
 
 
-def create_spring_with_check(h, w, height, width, point, points):
+def create_spring_with_check(h, w, height, width, point, points_grid):
 	springconstant = 1.0
 	breakforce = 1.0
 	if not out_bounds(h, w, height, width):
-		Spring(springconstant, breakforce, point, points[h][w])
+		Spring(springconstant, breakforce, point, points_grid[h][w])
 
 
-def link_points(height, width, points):
+def link_points(height, width, points_grid):
 	for h in range(0, height):
 		for w in range(0, width):
-			point = points[h][w]
-			create_spring_with_check(h+1, w, height, width, point, points)
-			create_spring_with_check(h, w+1, height, width, point, points)
+			point = points_grid[h][w]
+			create_spring_with_check(h+1, w, height, width, point, points_grid)
+			create_spring_with_check(h, w+1, height, width, point, points_grid)
 
 
 def create_sqaure_point_grid():
-	height = 10
-	width = 10
-	points = create_points(height, width)
-	link_points(height, width, points)
-	return points
+	height = 25
+	width = 25
+	points_grid = create_points(height, width)
+	link_points(height, width, points_grid)
+	points = list()
+	for h in range(1, len(points_grid)-1):
+		for w in range(1, len(points_grid[h])-1):
+			points.append(points_grid[h][w])
+			
+	edge_points = list()
+	for h in range(1, len(points_grid)-1):
+		edge_points.append(points_grid[h][0])
+		edge_points.append(points_grid[h][-1])
+	for w in range(1, len(points_grid[0])-1):
+		edge_points.append(points_grid[0][w])
+		edge_points.append(points_grid[-1][w])
+	return Grid(points, edge_points)
 
-
+"""
 def calc_hex_position(h, w, height, width, even_row):
 	field_size = 1.0
 	offset_x = 0.01
@@ -105,51 +130,96 @@ def create_hex_point_grid():
 	points = create_hex_grid_points(height, width)
 	#link_points_hex(height, width, points)
 	return points
-
+"""
 
 def get_xs_ys(points):
 	xs = list()
 	ys = list()
-	for row in points:
-		for point in row:
-			y, x = point.position
-			xs.append(x)
-			ys.append(y)
+	for point in points:
+		x, y = point.position
+		xs.append(x)
+		ys.append(y)
 	return xs, ys
 
 
 def plot_spring(spring):
-	point1_y, point1_x = spring.point1.position
-	point2_y, point2_x = spring.point2.position 
+	point1_x, point1_y = spring.point1.position
+	point2_x, point2_y = spring.point2.position 
 	plt.plot([point1_x, point2_x], [point1_y, point2_y], color='k', linestyle='-', zorder=1)
 
 
-def plot_springs(points):
+def plot_springs(grid):
 	unique_springs = set()
-	for row in points:
-		for point in row:
-			for spring in point.springs:
-				unique_springs.add(spring)
+	for point in grid.points:
+		for spring in point.springs:
+			unique_springs.add(spring)
 	for spring in unique_springs:
 		plot_spring(spring)
 
 
-def plot_points(points):
+def plot_points(grid):
+	points = grid.points
+	edge_points = grid.edge_points
 	xs, ys = get_xs_ys(points)
 	plt.scatter(xs, ys, color="r", zorder=2)
-	#plot_springs(points)
+	xs, ys = get_xs_ys(edge_points)
+	plt.scatter(xs, ys, color="b", zorder=2)
+
+
+def plot_grid(grid):
+	plot_points(grid)
+	plot_springs(grid)
 	plt.show()
 
 
-#springconstant = 1.0
+springconstant = 1.0
 #friction_threshold = 0.9
 #number of relaxation after is spring is broken = 20
 #breaking treshold is gaussian distributed.
+start_lambda = 0.035
+lambda_val = start_lambda
 
+
+def calc_magnitude(vector):
+	x, y = vector
+	return math.sqrt(x**2 + y**2)
+
+
+def calc_force_spring(spring, point):
+	k = spring.springconstant
+	if spring.point1 == point:
+		point_x, point_y = spring.point1.position
+		other_point_x, other_point_y = spring.point2.position
+	else:
+		point_x, point_y = spring.point2.position
+		other_point_x, other_point_y = spring.point1.position
+	magnitude = math.sqrt((point_x - other_point_x)**2 + (point_y - other_point_y)**2)
+	force_x = k*((point_x - other_point_x) / magnitude) * (magnitude - lambda_val)
+	force_y = k*((point_y - other_point_y) / magnitude) * (magnitude - lambda_val)
+	#print("spring",force_x, force_y, calc_magnitude((force_x, force_y)))
+	return force_x, force_y
+	
+	
+def calc_force(point):
+	force_x = 0.0
+	force_y = 0.0
+	for spring in point.springs:
+		cur_force_x, cur_force_y = calc_force_spring(spring, point)
+		force_x += cur_force_x
+		force_y += cur_force_y
+	return -force_x, -force_y
 
 def main():
-	points = create_hex_point_grid()
-	plot_points(points)
+	grid = create_sqaure_point_grid()
+	for i in range(0,10):
+		plot_grid(grid)
+		for point in grid.points:
+			movement = calc_force(point)
+			#print(movement)
+			point.move(movement)
+		
+	plot_grid(grid)
+	print(" kjjsflj")
 
 if __name__ == "__main__":
     main()
