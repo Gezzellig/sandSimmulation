@@ -40,8 +40,7 @@ class Spring:
 		return "{}, {}, {}:{}".format(self.springconstant, self.strain_threshold, self.point1, self.point2)
 
 
-def calc_position(h, w, height, width):
-	field_size = 1.0
+def calc_position(h, w, height, width, field_size):
 	offset_x = 0.01
 	offset_y = 0.01
 	y_pos = (field_size/(height-1))*(height-(h+1)) + random.uniform(-offset_y, offset_y)
@@ -49,12 +48,12 @@ def calc_position(h, w, height, width):
 	return x_pos, y_pos
 
 
-def create_points(height, width):
+def create_points(height, width, field_size):
 	points = list()
 	for h in range(0, height):
 		points.append(list())
 		for w in range(0, width):
-			points[h].append(Point(calc_position(h, w, height, width)))
+			points[h].append(Point(calc_position(h, w, height, width, field_size)))
 	return points
 
 
@@ -77,8 +76,12 @@ def link_points(height, width, points_grid):
 			create_spring_with_check(h, w+1, height, width, point, points_grid)
 
 
-def create_sqaure_point_grid(height, width):
-	points_grid = create_points(height, width)
+def create_sqaure_point_grid(height, width, field_size):
+	if not height == width:
+		error("height should be equal to width")
+	start_lambda = field_size / (height - 1)
+	
+	points_grid = create_points(height, width, field_size)
 	link_points(height, width, points_grid)
 	points = list()
 	for h in range(1, len(points_grid)-1):
@@ -92,7 +95,7 @@ def create_sqaure_point_grid(height, width):
 	for w in range(1, len(points_grid[0])-1):
 		edge_points.append(points_grid[0][w])
 		edge_points.append(points_grid[-1][w])
-	return Grid(points, edge_points)
+	return start_lambda, Grid(points, edge_points)
 
 """
 def calc_hex_position(h, w, height, width, even_row):
@@ -163,10 +166,10 @@ def plot_springs(grid):
 		plot_spring(spring)
 
 
-def plot_forces(grid):
+def plot_forces(grid, lambda_val):
 	for point in grid.points:
 		x, y = point.position
-		force_x, force_y = calc_force(point)
+		force_x, force_y = calc_force(point, lambda_val)
 		plt.arrow(x, y, force_x, force_y)
 
 
@@ -179,19 +182,17 @@ def plot_points(grid):
 	plt.scatter(xs, ys, color="b", zorder=2)
 
 
-def plot_grid(grid):
+def plot_grid(grid, lambda_val):
 	plt.figure()
 	plot_points(grid)
 	plot_springs(grid)
-	#plot_forces(grid)
+	plot_forces(grid, lambda_val)
 
 
 springconstant = 1.0
 #friction_threshold = 0.9
 #number of relaxation after is spring is broken = 20
 #breaking treshold is gaussian distributed.
-start_lambda = 0.002
-lambda_val = start_lambda
 
 
 def calc_magnitude(vector):
@@ -199,7 +200,7 @@ def calc_magnitude(vector):
 	return math.sqrt(x**2 + y**2)
 
 
-def calc_force_spring(spring, point):
+def calc_force_spring(spring, point, lambda_val):
 	k = spring.springconstant
 	if spring.point1 == point:
 		point_x, point_y = spring.point1.position
@@ -213,18 +214,18 @@ def calc_force_spring(spring, point):
 	return force_x, force_y
 	
 	
-def calc_force(point):
+def calc_force(point, lambda_val):
 	force_x = 0.0
 	force_y = 0.0
 	for spring in point.springs:
-		cur_force_x, cur_force_y = calc_force_spring(spring, point)
+		cur_force_x, cur_force_y = calc_force_spring(spring, point, lambda_val)
 		force_x += cur_force_x
 		force_y += cur_force_y
 	return -force_x, -force_y
 
 
 def relax_point(point):
-	move_x, move_y = calc_force(point)
+	move_x, move_y = calc_force(point, lambda_val)
 	x, y = point.position
 	relaxed_position = (x + (move_x*0.1), y + move_y*0.1)
 	relaxed_point = Point(relaxed_position)
@@ -254,7 +255,6 @@ def relax_grid(grid):
 def relax_grid_n_times(grid, n):
 	for i in range(0, n):
 		grid = relax_grid(grid)
-		plot_grid(grid)
 	return grid
 
 
@@ -269,9 +269,10 @@ def max_strain_spring(grid, lambda_val):
 	max_rel_strain = 0
 	max_rel_strain_spring = None
 	for spring in get_unique_springs(grid):
-		 if calc_strain(spring, lambda_val) - spring.strain_threshold > max_rel_strain:
-			 max_rel_strain = calc_strain(spring) - spring.strain_threshold
-			 max_rel_strain_spring = spring
+		rel_strain = calc_strain(spring, lambda_val) - spring.strain_threshold
+		if rel_strain > max_rel_strain:
+			max_rel_strain = rel_strain
+			max_rel_strain_spring = spring
 	return max_rel_strain_spring
 
 
@@ -281,18 +282,24 @@ def remove_spring(spring):
 	spring.point2.springs.remove(spring)
 
 
-def spring_break_loop(grid, lambda_val):
-	while max_strain_spring(grid, lambda_val) is not None:
-		
+def spring_break_loop(grid, lambda_val, relax_iterations):
+	broken_spring = max_strain_spring(grid, lambda_val)
+	while broken_spring is not None:
+		remove_spring(broken_spring)
 		grid = relax_grid_n_times(grid, relax_interations)
+		plot_grid(grid)
+		broken_spring = max_strain_spring(grid, lambda_val)
 
 
 def main():
-	grid = create_sqaure_point_grid(5, 5)
-	relax_iterations = 5
+	start_lambda, grid = create_sqaure_point_grid(10, 10, 1.0)
+	print(start_lambda)
+	lambda_val = start_lambda
 	plot_grid(grid)
-	#relaxed_grid = relax_grid_n_times(grid, relax_iterations)
-	
+	relax_iterations = 30
+	grid = relax_grid_n_times(grid, relax_iterations)
+	plot_grid(grid)
+	spring_break_loop(grid, lambda_val, relax_iterations)	
 	plt.show()
 
 if __name__ == "__main__":
