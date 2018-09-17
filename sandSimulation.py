@@ -6,7 +6,8 @@ import math
 #So it has max y and min x
 
 class Grid:
-	def __init__(self, points, edge_points):
+	def __init__(self, lambda_val, points, edge_points):
+		self.lambda_val = lambda_val
 		self.points = points
 		self.edge_points = edge_points
 
@@ -41,8 +42,8 @@ class Spring:
 
 
 def calc_position(h, w, height, width, field_size):
-	offset_x = 0.01
-	offset_y = 0.01
+	offset_x = 0.1
+	offset_y = 0.1
 	y_pos = (field_size/(height-1))*(height-(h+1)) + random.uniform(-offset_y, offset_y)
 	x_pos = (field_size/(width-1))*(w) + random.uniform(-offset_x, offset_x)
 	return x_pos, y_pos
@@ -95,7 +96,7 @@ def create_sqaure_point_grid(height, width, field_size):
 	for w in range(1, len(points_grid[0])-1):
 		edge_points.append(points_grid[0][w])
 		edge_points.append(points_grid[-1][w])
-	return start_lambda, Grid(points, edge_points)
+	return Grid(start_lambda, points, edge_points)
 
 """
 def calc_hex_position(h, w, height, width, even_row):
@@ -166,10 +167,10 @@ def plot_springs(grid):
 		plot_spring(spring)
 
 
-def plot_forces(grid, lambda_val):
+def plot_forces(grid):
 	for point in grid.points:
 		x, y = point.position
-		force_x, force_y = calc_force(point, lambda_val)
+		force_x, force_y = calc_force(point, grid.lambda_val)
 		plt.arrow(x, y, force_x, force_y)
 
 
@@ -182,11 +183,11 @@ def plot_points(grid):
 	plt.scatter(xs, ys, color="b", zorder=2)
 
 
-def plot_grid(grid, lambda_val):
+def plot_grid(grid):
 	plt.figure()
 	plot_points(grid)
 	plot_springs(grid)
-	plot_forces(grid, lambda_val)
+	plot_forces(grid)
 
 
 springconstant = 1.0
@@ -224,7 +225,7 @@ def calc_force(point, lambda_val):
 	return -force_x, -force_y
 
 
-def relax_point(point):
+def relax_point(point, lambda_val):
 	move_x, move_y = calc_force(point, lambda_val)
 	x, y = point.position
 	relaxed_position = (x + (move_x*0.1), y + move_y*0.1)
@@ -233,7 +234,7 @@ def relax_point(point):
 	return relaxed_point
 
 
-def reconnect_relaxed_grid(grid):
+def reconnect_grid(grid):
 	for spring in get_unique_springs(grid):
 		point1 = spring.point1.next_point
 		point2 = spring.point2.next_point
@@ -241,14 +242,15 @@ def reconnect_relaxed_grid(grid):
 			
 
 def relax_grid(grid):
-	relaxed_grid = Grid(list(), list())
+	lambda_val = grid.lambda_val
+	relaxed_grid = Grid(lambda_val, list(), list())
 	for edge_point in grid.edge_points:
 		new_edge_point = Point(edge_point.position)
 		edge_point.add_next_point(new_edge_point)
 		relaxed_grid.edge_points.append(new_edge_point)
 	for point in grid.points:
-		relaxed_grid.points.append(relax_point(point))
-	reconnect_relaxed_grid(grid)
+		relaxed_grid.points.append(relax_point(point, lambda_val))
+	reconnect_grid(grid)
 	return relaxed_grid
 
 
@@ -265,11 +267,11 @@ def calc_strain(spring, lambda_val):
 	return magnitude / lambda_val - 1
 
 
-def max_strain_spring(grid, lambda_val):
+def max_strain_spring(grid):
 	max_rel_strain = 0
 	max_rel_strain_spring = None
 	for spring in get_unique_springs(grid):
-		rel_strain = calc_strain(spring, lambda_val) - spring.strain_threshold
+		rel_strain = calc_strain(spring, grid.lambda_val) - spring.strain_threshold
 		if rel_strain > max_rel_strain:
 			max_rel_strain = rel_strain
 			max_rel_strain_spring = spring
@@ -277,29 +279,53 @@ def max_strain_spring(grid, lambda_val):
 
 
 def remove_spring(spring):
-	print("removed")
 	spring.point1.springs.remove(spring)
 	spring.point2.springs.remove(spring)
 
 
-def spring_break_loop(grid, lambda_val, relax_iterations):
-	broken_spring = max_strain_spring(grid, lambda_val)
+def spring_break_loop(grid, relax_iterations):
+	relaxed_grid = relax_grid_n_times(grid, relax_iterations)
+	broken_spring = max_strain_spring(relaxed_grid)
 	while broken_spring is not None:
 		remove_spring(broken_spring)
-		grid = relax_grid_n_times(grid, relax_interations)
-		plot_grid(grid)
-		broken_spring = max_strain_spring(grid, lambda_val)
+		relaxed_grid = relax_grid_n_times(relaxed_grid, relax_iterations)
+		broken_spring = max_strain_spring(relaxed_grid)
+	return relaxed_grid
+
+
+def decrease_lambda(grid, decrement_step_size):
+	lambda_val = grid.lambda_val - decrement_step_size
+	decreased_grid = Grid(lambda_val, list(), list())
+	for edge_point in grid.edge_points:
+		new_edge_point = Point(edge_point.position)
+		edge_point.add_next_point(new_edge_point)
+		decreased_grid.edge_points.append(new_edge_point)
+	for point in grid.points:
+		new_point = Point(point.position)
+		point.add_next_point(new_point)
+		decreased_grid.points.append(new_point)
+	reconnect_grid(grid)
+	return decreased_grid
+
+
+def decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations):
+	decreased_grid = decrease_lambda(grid, decrement_step_size)
+	while decreased_grid.lambda_val > min_lambda:
+		print("Cur lambda= {}".format(decreased_grid.lambda_val))
+		spring_snapped_grid = spring_break_loop(decreased_grid, relax_iterations)
+		plot_grid(spring_snapped_grid)
+		decreased_grid = decrease_lambda(spring_snapped_grid, decrement_step_size)
+	return spring_snapped_grid
 
 
 def main():
-	start_lambda, grid = create_sqaure_point_grid(10, 10, 1.0)
-	print(start_lambda)
-	lambda_val = start_lambda
+	grid = create_sqaure_point_grid(30, 30, 29.0)
+	print(grid.lambda_val)
 	plot_grid(grid)
+	min_lambda = 0.4
+	decrement_step_size = 0.05
 	relax_iterations = 30
-	grid = relax_grid_n_times(grid, relax_iterations)
-	plot_grid(grid)
-	spring_break_loop(grid, lambda_val, relax_iterations)	
+	grid = decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations)
 	plt.show()
 
 if __name__ == "__main__":
