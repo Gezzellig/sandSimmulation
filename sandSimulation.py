@@ -35,9 +35,12 @@ def calc_force(point, lambda_val):
 
 def relax_point(point, lambda_val):
 	move_x, move_y = calc_force(point, lambda_val)
-	x, y = point.position
-	relaxed_position = (x + (move_x*0.1), y + move_y*0.1)
-	relaxed_point = Point(relaxed_position)
+	if calc_magnitude((move_x, move_y)) > mu:
+		x, y = point.position
+		relaxed_position = (x + (move_x*0.1), y + move_y*0.1)
+		relaxed_point = Point(relaxed_position)
+	else:
+		relaxed_point = Point(point.position)
 	point.add_next_point(relaxed_point)
 	return relaxed_point
 
@@ -122,14 +125,17 @@ def decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations
 		decreased_grid = decrease_lambda(spring_snapped_grid, decrement_step_size)
 	return spring_snapped_grid
 
+mu = 0.01
+free_memory = True
 
 def main():
-	grid = sqaureGrid.create_sqaure_point_grid(30, 30, 29.0)
+	grid = sqaureGrid.create_sqaure_point_grid(70, 70, 69.0)
 	print(grid.lambda_val)
 	plot_grid(grid)
 	min_lambda = 0.4
 	decrement_step_size = 0.05
 	relax_iterations = 5
+
 	grid = decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations)
 	show_plot()
 
