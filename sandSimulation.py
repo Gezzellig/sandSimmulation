@@ -135,12 +135,13 @@ def decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations
 mu = 0.01
 
 def main():
-	grid = sqaureGrid.create_sqaure_point_grid(70, 70, 69.0)
+	grid = sqaureGrid.create_sqaure_point_grid(30, 30, 69.0)
 	min_lambda = 0.4
 	decrement_step_size = 0.05
-	relax_iterations = 5
+	relax_iterations = 1
 
 	grid, intermediate_grids = decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations)
+	print("PLOT TIME")
 	for inter_grid in intermediate_grids:
 		plot_grid(inter_grid)
 	plot_grid(grid)

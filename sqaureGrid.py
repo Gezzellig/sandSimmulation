@@ -1,5 +1,5 @@
 import random
-from classes import Grid, Point, Spring
+from classes import Grid, Point, Spring, create_new_spring
 
 def calc_position(h, w, height, width, field_size):
 	offset_x = 0.1
@@ -22,14 +22,13 @@ def out_bounds(h, w, height, width):
 	return h < 0 or w < 0 or h >= height or w >= width 
 
 
-def create_spring_with_check(h, w, height, width, point, points_grid):
+def create_spring_with_check(h, w, height, width, strain_normal, strain_deviation, point, points_grid):
 	springconstant = 1.0
-	strain_threshold = 1.0
 	if not out_bounds(h, w, height, width):
-		return Spring(springconstant, strain_threshold, point, points_grid[h][w])
+		return create_new_spring(springconstant, strain_normal, strain_deviation, point, points_grid[h][w])
 
 
-def link_points(height, width, points_grid):
+def link_points(height, width, strain_normal, strain_deviation, points_grid):
 	springs = list()
 	for h in range(1, height-1):
 		point = points_grid[h][0]
@@ -56,7 +55,7 @@ def link_points(height, width, points_grid):
 	return springs
 
 
-def create_sqaure_point_grid(height, width, field_size):
+def create_sqaure_point_grid(height, width, field_size, strain_normal, strain_deviation):
 	if not height == width:
 		error("height should be equal to width")
 	start_lambda = field_size / (height - 1)

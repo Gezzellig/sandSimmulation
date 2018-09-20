@@ -1,3 +1,5 @@
+import numpy.random
+
 class Grid:
 	def __init__(self, lambda_val, points, edge_points, springs):
 		self.lambda_val = lambda_val
@@ -31,7 +33,7 @@ class Point:
 class Spring:
 	def __init__(self, springconstant, strain_threshold, point1, point2):
 		self.springconstant = springconstant
-		self.strain_threshold = strain_threshold
+		self.strain_threshold = 
 		self.point1 = point1
 		point1.add_spring(self)
 		self.point2 = point2
@@ -39,3 +41,6 @@ class Spring:
 		
 	def __repr__(self):
 		return "{}, {}, {}:{}".format(self.springconstant, self.strain_threshold, self.point1, self.point2)
+
+def create_new_spring(springconstant, strain_normal, strain_deviation, point1, point2):
+	return Spring(springconstant, numpy.random.normal(strain_normal, strain_deviation), point1, point2)
