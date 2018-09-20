@@ -51,6 +51,12 @@ def reconnect_grid(grid):
 		point1 = spring.point1.next_point
 		point2 = spring.point2.next_point
 		springs.append(Spring(spring.springconstant, spring.strain_threshold, point1, point2))
+	
+	#disconnect from previous grid
+	for point in grid.points:
+		point.next_point = None
+	for edge_point in grid.edge_points:
+		edge_point.next_point = None
 	return springs
 			
 
@@ -117,26 +123,27 @@ def decrease_lambda(grid, decrement_step_size):
 
 
 def decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations):
+	intermediate_grids = list()
 	decreased_grid = decrease_lambda(grid, decrement_step_size)
 	while decreased_grid.lambda_val > min_lambda:
 		print("Cur lambda= {}".format(decreased_grid.lambda_val))
 		spring_snapped_grid = spring_break_loop(decreased_grid, relax_iterations)
-		plot_grid(spring_snapped_grid)
+		intermediate_grids.append(spring_snapped_grid)
 		decreased_grid = decrease_lambda(spring_snapped_grid, decrement_step_size)
-	return spring_snapped_grid
+	return spring_snapped_grid, intermediate_grids
 
 mu = 0.01
-free_memory = True
 
 def main():
 	grid = sqaureGrid.create_sqaure_point_grid(70, 70, 69.0)
-	print(grid.lambda_val)
-	plot_grid(grid)
 	min_lambda = 0.4
 	decrement_step_size = 0.05
 	relax_iterations = 5
 
-	grid = decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations)
+	grid, intermediate_grids = decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations)
+	for inter_grid in intermediate_grids:
+		plot_grid(inter_grid)
+	plot_grid(grid)
 	show_plot()
 
 if __name__ == "__main__":
