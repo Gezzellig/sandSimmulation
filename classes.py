@@ -33,7 +33,7 @@ class Point:
 class Spring:
 	def __init__(self, springconstant, strain_threshold, point1, point2):
 		self.springconstant = springconstant
-		self.strain_threshold = 
+		self.strain_threshold = strain_threshold
 		self.point1 = point1
 		point1.add_spring(self)
 		self.point2 = point2

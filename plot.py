@@ -41,9 +41,9 @@ def plot_points(grid):
 
 def plot_grid(grid):
 	plt.figure()
-	plot_points(grid)
+	#plot_points(grid)
 	plot_springs(grid)
-	plot_forces(grid)
+	#plot_forces(grid)
 	
 def show_plot():
 	plt.show()
