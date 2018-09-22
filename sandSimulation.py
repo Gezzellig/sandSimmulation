@@ -1,4 +1,5 @@
 import sqaureGrid
+import hexGrid
 from classes import Grid, Point, Spring
 from plot import plot_grid, show_plot
 import math
