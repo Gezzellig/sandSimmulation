@@ -3,8 +3,8 @@
 
 using namespace std;
 
-Point::Point(double x, double y)
-: pos(make_pair(x, y)), next_point(nullptr), springs(list<Spring*>())
+Point::Point(pair<double, double> pos)
+: pos(pos), next_point(nullptr), springs(list<Spring*>())
 {
     
 }
