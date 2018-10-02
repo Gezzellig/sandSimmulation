@@ -138,7 +138,7 @@ mu = 0.01
 def main():
 	strain_normal = 0.25
 	strain_deviation = 0.2 
-	grid = sqaureGrid.create_sqaure_point_grid(100, 100, 99.0, strain_normal, strain_deviation)
+	grid = sqaureGrid.create_sqaure_point_grid(50, 50, 49.0, strain_normal, strain_deviation)
 	min_lambda = 0.75
 	decrement_step_size = 0.025
 	relax_iterations = 5
@@ -149,6 +149,7 @@ def main():
 		plot_grid(inter_grid)
 	plot_grid(grid)
 	show_plot()
+
 
 if __name__ == "__main__":
     main()

@@ -38,7 +38,13 @@ class Spring:
 		point1.add_spring(self)
 		self.point2 = point2
 		point2.add_spring(self)
-		
+
+	def other_point(self, point):
+		if self.point1 == point:
+			return self.point2
+		else:
+			return self.point1
+
 	def __repr__(self):
 		return "{}, {}, {}:{}".format(self.springconstant, self.strain_threshold, self.point1, self.point2)
 

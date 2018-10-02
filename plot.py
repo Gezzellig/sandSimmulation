@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.collections as mat_col
 from classes import Grid, Point, Spring
 
 def get_xs_ys(points):
@@ -32,17 +33,37 @@ def plot_forces(grid):
 
 def plot_points(grid):
 	points = grid.points
-	edge_points = grid.edge_points
 	xs, ys = get_xs_ys(points)
 	plt.scatter(xs, ys, color="r", zorder=2)
+
+
+def plot_edge_points(grid):
+	edge_points = grid.edge_points
 	xs, ys = get_xs_ys(edge_points)
 	plt.scatter(xs, ys, color="b", zorder=2)
 
 
+def plot_triangles(ax, grid):
+	patches = list()
+	pointlist = [grid.points[36]]
+	for point in grid.points:
+		coordinates = list()
+		for spring in point.springs:
+			point_x, point_y = spring.other_point(point).position
+			coordinates.append([point_x, point_y])
+		if len(coordinates) > 1:
+			polygon = plt.Polygon(coordinates, True)
+			patches.append(polygon)
+	ax.add_collection(mat_col.PatchCollection(patches))
+
+
+
 def plot_grid(grid):
-	plt.figure()
+	fig, ax = plt.subplots()
 	#plot_points(grid)
-	plot_springs(grid)
+	#plot_springs(grid)
+	plot_triangles(ax, grid)
+	plot_edge_points(grid)
 	#plot_forces(grid)
 	
 def show_plot():
