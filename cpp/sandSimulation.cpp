@@ -92,15 +92,16 @@ Grid relax_grid(Grid grid, double mu, double move_factor)
 {
     double lambda_val = grid.lambda_val;
     Grid relaxed_grid = Grid(lambda_val, list<Point>(), list<Point>(), list<Spring*>());
+    exit(0);
     for (Point edge_point : grid.edge_points)
     {
-        auto *new_edge_point = new Point(edge_point.pos);
+        Point *new_edge_point = new Point(edge_point.pos);
         edge_point.add_next_point(new_edge_point);
-        relaxed_grid.edge_points.emplace_back(new_edge_point);
+        relaxed_grid.edge_points.push_back(*new_edge_point);
     }
     for (Point point : grid.points)
     {
-        relaxed_grid.points.emplace_back(relax_point(point, lambda_val, mu, move_factor));
+        relaxed_grid.points.push_back(*relax_point(point, lambda_val, mu, move_factor));
     }
     relaxed_grid.springs = reconnect_grid(grid);
     return relaxed_grid;

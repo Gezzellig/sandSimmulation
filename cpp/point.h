@@ -13,7 +13,7 @@ struct Point
     Point *next_point;
     list<Spring*> springs;
 
-    Point(pair<double, double>);
+    Point(pair<double, double> pos);
 
     void add_spring(Spring *spring);
     void add_next_point(Point *p);
