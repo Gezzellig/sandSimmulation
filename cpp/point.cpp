@@ -4,7 +4,7 @@
 using namespace std;
 
 Point::Point(pair<double, double> pos)
-: pos(pos), next_point(nullptr), springs(list<Spring*>())
+: pos(pos), next_point(nullptr)
 {
     
 }
