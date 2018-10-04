@@ -144,9 +144,9 @@ Spring *max_strain_spring(Grid grid)
     return max_rel_strain_spring;
 }
 
-Grid spring_break_loop(Grid grid, size_t n, double mu, double move_factor)
+Grid spring_break_loop(Grid *grid, size_t n, double mu, double move_factor)
 {
-    Grid relaxed_grid = relax_grid_n_times(grid, n, mu, move_factor);
+    Grid relaxed_grid = relax_grid_n_times(*grid, n, mu, move_factor);
     Spring *broken_spring = max_strain_spring(relaxed_grid);
     while (broken_spring != nullptr)
     {
@@ -165,7 +165,7 @@ Grid decrease_lambda_loop(Grid grid, double min_lambda, double decrement_step_si
     while (grid.lambda_val > min_lambda)
     {
         cout << "Current Lambda: " << grid.lambda_val;
-        grid = spring_break_loop(grid, n, mu, move_factor);
+        grid = spring_break_loop(&grid, n, mu, move_factor);
         //Add here some step for visualization perpouses
         grid.lambda_val -= decrement_step_size;
     }
