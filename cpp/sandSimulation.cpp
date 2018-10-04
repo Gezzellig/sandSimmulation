@@ -181,5 +181,5 @@ void normal_val_run()
     double move_factor = 0.2;
     double min_lambda = 0.75;
     double decrement_step_size = 0.025;
-    int n = 5; //number of iteration allowed in the relax step.
+    size_t n = 5; //number of iteration allowed in the relax step.
 }

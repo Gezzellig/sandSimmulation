@@ -22,4 +22,6 @@ struct Grid
 
 Grid create_square_grid(size_t dim, double field_size, double strain_normal, double strain_deviation);
 
+void print_grid(Grid *g);
+
 #endif //CPP_GRID_H

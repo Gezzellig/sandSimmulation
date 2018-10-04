@@ -44,7 +44,6 @@ Position calc_square_position(size_t w, size_t h, size_t dim, double field_size)
     // TODO: random small offsets from uniform dist
     double xpos = field_size / (dim-1) * (dim - (h+1));
     double ypos = field_size / (dim-1) * w;
-    cout << "x,y: (" << w << "," << h << ")" << endl;
     return make_pair(xpos, ypos);
 }
 
@@ -82,4 +81,18 @@ Grid create_square_grid(size_t dim, double field_size, double strain_normal, dou
     }
 
     return Grid(start_lambda, points, edge_points, springs);
+}
+
+void print_grid(Grid *g)
+{
+    cout << "Printing grid: " << g->points.size() << " rows of length " << g->points[0].size() << endl;
+    for (auto row : g->points) {
+        for (auto p : row) {
+            if (p == nullptr) {
+                cout << "null point in grid" << endl;
+                exit(1);
+            }
+            cout << p->pos.first << " " << p->pos.second << endl;
+        }
+    }
 }
