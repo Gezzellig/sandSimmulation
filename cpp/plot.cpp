@@ -4,7 +4,7 @@
 
 using namespace std;
 
-vector<Position> getPosNeighbours(Point* point)
+/*vector<Position> getPosNeighbours(Point* point)
 {
     vector<Position> posNeighbours;
     for (Spring* spring : point->springs)
@@ -15,8 +15,8 @@ vector<Position> getPosNeighbours(Point* point)
 
 string pointToPolygonString(Point* point)
 {
-    point.
-}
+
+}*/
 
 
 int main(){

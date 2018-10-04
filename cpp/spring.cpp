@@ -8,3 +8,4 @@ Spring::Spring(double springconstant, double strain_threshold, Point *a, Point *
     a->add_spring(this);
     b->add_spring(this);
 }
+
