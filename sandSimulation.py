@@ -1,3 +1,5 @@
+import sys
+
 import sqaureGrid
 import hexGrid
 from classes import Grid, Point, Spring
@@ -140,7 +142,7 @@ mu = 0.01
 def main():
     strain_normal = 0.25
     strain_deviation = 0.2
-    grid = hexGrid.create_hex_point_grid(100, 100, 99.0, strain_normal, strain_deviation)
+    grid = hexGrid.create_hex_point_grid(10, 10, 9.0, strain_normal, strain_deviation)
     min_lambda = 0.75
     decrement_step_size = 0.025
     relax_iterations = 5
