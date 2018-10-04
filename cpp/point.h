@@ -4,16 +4,17 @@
 #include <list>
 
 using namespace std;
+using Position = pair<double, double>;
 
 struct Spring;
 
 struct Point
 {
-    pair<double, double> pos;
+    Position pos;
     Point *next_point;
     list<Spring*> springs;
 
-    Point(pair<double, double> pos);
+    Point(Position pos);
 
     void add_spring(Spring *spring);
     void add_next_point(Point *p);

@@ -1,6 +1,3 @@
-#include <iostream>
-#include "point.h"
+#include "mainwindow.h"
 
 using namespace std;
-
-

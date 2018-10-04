@@ -7,9 +7,9 @@ struct Spring
 {
     double springconstant;
     double strain_threshold;
-    Point &a, &b;
+    Point *a, *b;
 
-    Spring(double springconstant, double strain_threshold, Point& a, Point& b);
+    Spring(double springconstant, double strain_threshold, Point *a, Point *b);
 
 };
 

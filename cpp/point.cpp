@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Point::Point(pair<double, double> pos)
+Point::Point(Position pos)
 : pos(pos), next_point(nullptr)
 {
     
