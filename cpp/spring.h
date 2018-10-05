@@ -10,6 +10,7 @@ struct Spring
     Point *a, *b;
 
     Spring(double springconstant, double strain_threshold, Point *a, Point *b);
+    Point* getOtherPoint(Point* point);
 
 };
 

@@ -9,12 +9,12 @@
 struct Grid
 {
     double lambda_val;
-    vector<vector<Point*>> points;
+    vector<Point*> points;
     list<Point*> edge_points;
     list<Spring*> springs;
 
     Grid(double lambda_val);
-    Grid(double lambda_val, vector<vector<Point*>> points, list<Point*> edge_points, list<Spring*> springs);
+    Grid(double lambda_val, vector<Point*> points, list<Point*> edge_points, list<Spring*> springs);
     ~Grid();
     Grid(const Grid &g2);
     void remove_spring(Spring *spring);

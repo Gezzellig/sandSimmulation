@@ -12,7 +12,7 @@ Grid::Grid(double lambda_val)
 
 }
 
-Grid::Grid(double lambda_val, vector<vector<Point*>> points, list<Point*> edge_points, list<Spring*> springs)
+Grid::Grid(double lambda_val, vector<Point*> points, list<Point*> edge_points, list<Spring*> springs)
     : lambda_val(lambda_val), points(points), edge_points(edge_points), springs(springs)
 {
 
@@ -20,10 +20,8 @@ Grid::Grid(double lambda_val, vector<vector<Point*>> points, list<Point*> edge_p
 
 Grid::~Grid()
 {
-    for (auto row : points) {
-        for (auto p : row) {
-            delete p;
-        }
+    for (auto p : points) {
+        delete p;
     }
     for (auto spring: springs)
         delete spring;
@@ -80,19 +78,21 @@ Grid create_square_grid(size_t dim, double field_size, double strain_normal, dou
         }
     }
 
-    return Grid(start_lambda, points, edge_points, springs);
+    vector<Point*> points1d;
+    for (vector<Point*> pointRow : points)
+        for (Point* point : pointRow)
+            points1d.emplace_back(point);
+    return Grid(start_lambda, points1d, edge_points, springs);
 }
 
 void print_grid(Grid *g)
 {
-    cout << "Printing grid: " << g->points.size() << " rows of length " << g->points[0].size() << endl;
-    for (auto row : g->points) {
-        for (auto p : row) {
-            if (p == nullptr) {
-                cout << "null point in grid" << endl;
-                exit(1);
-            }
-            cout << p->pos.first << " " << p->pos.second << endl;
+    cout << "Printing grid: " << g->points.size() << " points" << endl;
+    for (auto p : g->points) {
+        if (p == nullptr) {
+            cout << "null point in grid" << endl;
+            exit(1);
         }
+        cout << p->pos.first << " " << p->pos.second << endl;
     }
 }

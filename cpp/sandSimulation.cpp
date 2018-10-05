@@ -99,11 +99,9 @@ Grid relax_grid(Grid grid, double mu, double move_factor)
 //        edge_point->add_next_point(new_edge_point);
 //        relaxed_grid->edge_points.push_back(*new_edge_point);
 //    }
-    for (size_t h = 0; h < grid.points.size(); ++h)
+    for (Point *p : grid.points)
     {
-        for (Point *p : grid.points[h]) {
-            relaxed_grid.points[h].push_back(relax_point(p, lambda_val, mu, move_factor));
-        }
+        relaxed_grid.points.push_back(relax_point(p, lambda_val, mu, move_factor));
     }
     relaxed_grid.springs = reconnect_grid(grid);
     return relaxed_grid;
