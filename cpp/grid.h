@@ -3,6 +3,7 @@
 
 #include <list>
 #include <vector>
+#include <random>
 
 #include "point.h"
 
@@ -16,11 +17,11 @@ struct Grid
     Grid(double lambda_val);
     Grid(double lambda_val, vector<Point*> points, list<Point*> edge_points, list<Spring*> springs);
     ~Grid();
-    Grid(const Grid &g2);
+//    Grid(const Grid &g2);
     void remove_spring(Spring *spring);
 };
 
-Grid create_square_grid(size_t dim, double field_size, double strain_normal, double strain_deviation);
+Grid *create_square_grid(size_t dim, double field_size, double strain_normal, double strain_deviation);
 
 void print_grid(Grid *g);
 

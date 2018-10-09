@@ -1,14 +1,8 @@
-//
-// Created by knaap on 4-10-18.
-//
-
 #ifndef CPP_PLOT_H
 #define CPP_PLOT_H
 
+#include "grid.h"
 
-class plot {
-
-};
-
+void plot_grid(Grid *grid);
 
 #endif //CPP_PLOT_H

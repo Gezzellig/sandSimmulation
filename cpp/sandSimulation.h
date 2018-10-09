@@ -3,6 +3,6 @@
 
 #include "grid.h"
 
-Grid decrease_lambda_loop(Grid grid, double min_lambda, double decrement_step_size, size_t n, double mu, double move_factor);
+list<Grid*> decrease_lambda_loop(Grid *grid, double min_lambda, double decrement_step_size, size_t n, double mu, double move_factor);
 
 #endif
