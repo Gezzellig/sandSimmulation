@@ -1,6 +1,7 @@
 
 #include <list>
 #include <iostream>
+#include <random>
 #include "grid.h"
 #include "spring.h"
 
@@ -27,10 +28,10 @@ Grid::~Grid()
         delete spring;
 }
 
-Grid::Grid(const Grid &g2)
-{
-    cout << "copy constructor of grid called; this will fail as it's not implemented yet" << endl;
-}
+//Grid::Grid(const Grid &g2)
+//{
+//    cout << "copy constructor of grid called; this will fail as it's not implemented yet" << endl;
+//}
 
 void Grid::remove_spring(Spring *spring)
 {
@@ -45,11 +46,14 @@ Position calc_square_position(size_t w, size_t h, size_t dim, double field_size)
     return make_pair(xpos, ypos);
 }
 
-Grid create_square_grid(size_t dim, double field_size, double strain_normal, double strain_deviation)
+Grid *create_square_grid(size_t dim, double field_size, double strain_normal, double strain_deviation)
 {
     double start_lambda = field_size / (dim - 1);
 
-    double springconstant = 1.0;
+//    double springconstant = 1.0;
+
+    default_random_engine gen;
+    normal_distribution<double> strain_thresholds(strain_normal, strain_deviation);
 
     vector<vector<Point*>> points;
     points.reserve(dim);
@@ -72,9 +76,9 @@ Grid create_square_grid(size_t dim, double field_size, double strain_normal, dou
             // TODO: norm dist
             //double strain_threshold = calc_norm(strain_normal, strain_deviation);
             if (h != dim-1)
-                springs.push_back(new Spring(springconstant, 1, points[h][w], points[h+1][w]));
+                springs.push_back(new Spring(1.0, strain_thresholds(gen), points[h][w], points[h+1][w]));
             if (w != dim-1)
-                springs.push_back(new Spring(springconstant, 1, points[h][w], points[h][w+1]));
+                springs.push_back(new Spring(1.0, strain_thresholds(gen), points[h][w], points[h][w+1]));
         }
     }
 
@@ -82,7 +86,7 @@ Grid create_square_grid(size_t dim, double field_size, double strain_normal, dou
     for (vector<Point*> pointRow : points)
         for (Point* point : pointRow)
             points1d.emplace_back(point);
-    return Grid(start_lambda, points1d, edge_points, springs);
+    return new Grid(start_lambda, points1d, edge_points, springs);
 }
 
 void print_grid(Grid *g)

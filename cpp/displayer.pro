@@ -30,12 +30,28 @@ SOURCES += \
     point.cpp \
     sandSimulation.cpp \
     spring.cpp \
-    console.cpp
+    console.cpp \
+    console.cpp \
+    grid.cpp \
+    main.cpp \
+    plot.cpp \
+    point.cpp \
+    sandSimulation.cpp \
+    spring.cpp \
+    cmake-build-debug/CMakeFiles/3.12.2/CompilerIdC/CMakeCCompilerId.c \
+    cmake-build-debug/CMakeFiles/feature_tests.c
 
 HEADERS += \
         mainwindow.h \
     grid.h \
     point.h \
+    spring.h \
+    sandSimulation.h \
+    gnuplot.h \
+    grid.h \
+    plot.h \
+    point.h \
+    sandSimulation.h \
     spring.h
 
 FORMS += \
