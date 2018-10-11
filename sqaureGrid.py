@@ -55,9 +55,10 @@ def link_points(height, width, strain_normal, strain_deviation, points_grid):
 	return springs
 
 
-def create_sqaure_point_grid(height, width, field_size, strain_normal, strain_deviation):
+def create_sqaure_grid(height, width, field_size, strain_normal, strain_deviation):
 	if not height == width:
-		error("height should be equal to width")
+		print("height should be equal to width")
+		exit(-1)
 	start_lambda = field_size / (height - 1)
 	
 	points_grid = create_points(height, width, field_size)

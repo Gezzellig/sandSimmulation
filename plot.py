@@ -1,8 +1,9 @@
 import math
+import os
 
 import matplotlib.pyplot as plt
 import matplotlib.collections as mat_col
-from classes import Grid, Point, Spring
+
 
 def get_xs_ys(points):
     xs = list()
@@ -74,14 +75,36 @@ def plot_triangles(ax, grid):
     ax.add_collection(mat_col.PatchCollection(patches))
 
 
-
 def plot_grid(grid):
     fig, ax = plt.subplots()
+    fig.suptitle("Points:{}, Lambda={:3.3f}".format(len(grid.points), grid.lambda_val))
     #plot_points(grid)
     #plot_springs(grid)
     plot_triangles(ax, grid)
     plot_edge_points(grid)
     #plot_forces(grid)
+
+
+def prepare_storage(type_string, numPoints):
+    base_folder_name = "plots"
+    if not os.path.exists(base_folder_name):
+        os.makedirs(base_folder_name)
+    folder_name = "{}/{}p{}".format(base_folder_name, type_string, numPoints)
+    if os.path.exists(folder_name):
+        print("The output folder already exists!")
+        exit(-1)
+    os.makedirs(folder_name)
+    return folder_name
+
+
+def store_plot(folder_name, grid):
+    if folder_name == "":
+        print("Trying to store a plot, but prepare_storage isn't called!")
+        exit(-1)
+    image_name = "p{}l{:3.3f}".format(len(grid.points), grid.lambda_val).replace(".", "")
+    plot_grid(grid)
+    plt.savefig("{}/{}.png".format(folder_name, image_name), bbox_inches="tight")
+
 
 def show_plot():
     plt.show()

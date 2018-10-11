@@ -3,7 +3,7 @@ import sys
 import sqaureGrid
 import hexGrid
 from classes import Grid, Point, Spring
-from plot import plot_grid, show_plot
+from plot import plot_grid, show_plot, prepare_storage, store_plot
 import math
 
 
@@ -40,7 +40,7 @@ def relax_point(point, lambda_val):
     move_x, move_y = calc_force(point, lambda_val)
     if calc_magnitude((move_x, move_y)) > mu:
         x, y = point.position
-        relaxed_position = (x + (move_x * 0.2), y + move_y * 0.2)
+        relaxed_position = (x + (move_x * move_factor), y + move_y * move_factor)
         relaxed_point = Point(relaxed_position)
     else:
         relaxed_point = Point(point.position)
@@ -136,24 +136,25 @@ def decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations
     return decreased_grid, intermediate_grids
 
 
-mu = 0.01
+mu = 0.005
+move_factor = 0.25
 
 
 def main():
     strain_normal = 0.25
-    strain_deviation = 0.2
-    grid = hexGrid.create_hex_point_grid(10, 10, 9.0, strain_normal, strain_deviation)
+    strain_deviation = 0.15
+    type_string = "sqaure"
+    grid = sqaureGrid.create_sqaure_grid(100, 100, 99.0, strain_normal, strain_deviation)
     min_lambda = 0.75
     decrement_step_size = 0.025
-    relax_iterations = 5
+    relax_iterations = 9
 
+    folder_name = prepare_storage(type_string, len(grid.points))
     grid, intermediate_grids = decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations)
     print("PLOT TIME")
     for inter_grid in intermediate_grids:
-        plot_grid(inter_grid)
-    plot_grid(grid)
-    show_plot()
-
+        store_plot(folder_name, inter_grid)
+    store_plot(folder_name, grid)
 
 if __name__ == "__main__":
     main()

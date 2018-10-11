@@ -54,7 +54,7 @@ int main(){
     Spring* spring5 = new Spring(1.0, 1.0, point2, point5);
     Spring* spring6 = new Spring(1.0, 1.0, point2, point3);*/
 
-    Grid grid = create_square_grid(250, 9.0, 1.0, 1.0);
+    Grid grid = create_square_grid(100, 9.0, 1.0, 1.0);
     string plotString = "set title 'Simple demo of scatter data conversion to grid data'\n";
     int cnt = 1;
     for (Point* point : grid.points)
@@ -89,7 +89,8 @@ int main(){
     //To close the polygon
     plotString += " to " + to_string(points[0].pos.first) + ", " + to_string(points[0].pos.second) + "\n";
     */
-    plotString += "plot -10, 10\n";
+//    plotString += "[set xrange=0:100]\n";
+    plotString += "plot [0:100][5:7] -10\n";
     cout << plotString;
     gp.sendLine(plotString);
     return 0;
