@@ -1,6 +1,6 @@
 import sys
 
-import sqaureGrid
+import squareGrid
 import hexGrid
 from classes import Grid, Point, Spring
 from plot import plot_grid, show_plot, prepare_storage, store_plot
@@ -144,7 +144,8 @@ def main():
     strain_normal = 0.25
     strain_deviation = 0.15
     type_string = "sqaure"
-    grid = sqaureGrid.create_sqaure_grid(100, 100, 99.0, strain_normal, strain_deviation)
+    grid = squareGrid.create_square_grid(100, strain_normal, strain_deviation)
+    # grid = hexGrid.create_hex_point_grid(100, strain_normal, strain_deviation)
     min_lambda = 0.75
     decrement_step_size = 0.025
     relax_iterations = 9
