@@ -2,7 +2,7 @@ import random
 import math
 from classes import Grid, Point, Spring, create_new_spring
 
-def calc_position(h, w, dim, field_size):
+def calc_position(h, w, dim):
 	offset_x = 0.1
 	offset_y = 0.1
 	rx = random.uniform(-offset_x, offset_x)
