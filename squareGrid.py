@@ -47,7 +47,7 @@ def link_points(dim, strain_normal, strain_deviation, points_grid):
 	
 	
 	for h in range(1, dim-1):
-		for w in range(1, width-1):
+		for w in range(1, dim-1):
 			point = points_grid[h][w]
 			spring = create_spring_with_check(h+1, w, dim, strain_normal, strain_deviation, point, points_grid)
 			if not spring is None:
