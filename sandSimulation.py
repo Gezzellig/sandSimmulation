@@ -164,26 +164,3 @@ def sand_simulation(folder_name, type_string, dim, strain_normal, strain_deviati
     for inter_grid in intermediate_grids:
         store_plot(total_folder_name, inter_grid)
     store_plot(total_folder_name, grid)
-
-
-def main():
-    type_string = "hex"
-    #dim = 30
-    dim_list = range(10, 101, 10)
-    strain_normal = 0.25
-    strain_deviation = 0.15
-
-
-    min_lambda = 0.75
-    decrement_step_size = 0.025
-    relax_iterations = 9
-    mu = 0.005
-    move_factor = 0.3
-    #move_factor_list = np.linspace(0.05, 1, 20)
-    for i in range(0, len(dim_list)):
-        #sand_simulation("moveFactorListing/movefactor:{:.2}".format(move_factor_list[i]), type_string, vertical_size, strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor_list[i])
-        sand_simulation("hexDim/dim:{}".format(dim_list[i]), type_string, dim_list[i], strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor)
-
-
-if __name__ == "__main__":
-    main()
