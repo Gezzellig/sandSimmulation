@@ -99,7 +99,7 @@ def prepare_storage(folder_name):
 def write_settings(total_folder_name, type_string, vertical_size, strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor):
     file = open("{}/runsettings.txt".format(total_folder_name), "w")
     file.write("type_string: {}\n".format(type_string))
-    file.write("vertical_size: {}\n".format(vertical_size))
+    file.write("dim: {}\n".format(vertical_size))
     file.write("strain_normal: {}\n".format(strain_normal))
     file.write("strain_deviation: {}\n".format(strain_deviation))
     file.write("min_lambda: {}\n".format(min_lambda))

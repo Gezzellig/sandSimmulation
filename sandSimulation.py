@@ -3,7 +3,7 @@ import random
 import numpy as np
 import sys
 
-import sqaureGrid
+import squareGrid
 import hexGrid
 from classes import Grid, Point, Spring
 from plot import plot_grid, show_plot, prepare_storage, store_plot, write_settings
@@ -139,22 +139,22 @@ def decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations
     return decreased_grid, intermediate_grids
 
 
-def sand_simulation(folder_name, type_string, vertical_size, strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor):
+def sand_simulation(folder_name, type_string, dim, strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor):
     grid = None
 
     random.seed(12345)
 
     if type_string == "square":
-        grid = sqaureGrid.create_sqaure_grid(vertical_size, vertical_size, float(vertical_size)-1.0, strain_normal, strain_deviation)
+        grid = squareGrid.create_square_grid(dim, strain_normal, strain_deviation)
     elif type_string == "hex":
         print("NOT PROPERLY IMPLEMENTED")
-        grid = hexGrid.create_hex_point_grid(vertical_size, 0, 0, strain_normal, strain_deviation)
+        grid = hexGrid.create_hex_point_grid(dim, strain_normal, strain_deviation)
 
     if grid == None:
         print("No grid type was specified, exiting the program")
         exit(-1)
     total_folder_name = prepare_storage(folder_name)
-    write_settings(total_folder_name, type_string, vertical_size, strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor)
+    write_settings(total_folder_name, type_string, dim, strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor)
 
     print("Starting simulation of: {}".format(total_folder_name))
 
@@ -169,19 +169,21 @@ def sand_simulation(folder_name, type_string, vertical_size, strain_normal, stra
 
 def main():
     type_string = "square"
-    #vertical_size = 30
-    vertical_size_list = range(10, 101, 10)
+    #dim = 30
+    dim_list = range(10, 101, 10)
     strain_normal = 0.25
     strain_deviation = 0.15
-    min_lambda = 0.8
-    decrement_step_size = 0.0125
+
+
+    min_lambda = 0.75
+    decrement_step_size = 0.025
     relax_iterations = 9
     mu = 0.005
     move_factor = 0.3
     #move_factor_list = np.linspace(0.05, 1, 20)
-    for i in range(0, len(vertical_size_list)):
+    for i in range(0, len(dim_list)):
         #sand_simulation("moveFactorListing/movefactor:{:.2}".format(move_factor_list[i]), type_string, vertical_size, strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor_list[i])
-        sand_simulation("moveFactorListing/size:{}".format(vertical_size_list[i]), type_string, vertical_size_list[i], strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor)
+        sand_simulation("moveFactorListing/size:{}".format(dim_list[i]), type_string, dim_list[i], strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor)
 
 
 if __name__ == "__main__":
