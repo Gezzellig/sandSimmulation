@@ -147,7 +147,6 @@ def sand_simulation(folder_name, type_string, dim, strain_normal, strain_deviati
     if type_string == "square":
         grid = squareGrid.create_square_grid(dim, strain_normal, strain_deviation)
     elif type_string == "hex":
-        print("NOT PROPERLY IMPLEMENTED")
         grid = hexGrid.create_hex_point_grid(dim, strain_normal, strain_deviation)
 
     if grid == None:
@@ -168,7 +167,7 @@ def sand_simulation(folder_name, type_string, dim, strain_normal, strain_deviati
 
 
 def main():
-    type_string = "square"
+    type_string = "hex"
     #dim = 30
     dim_list = range(10, 101, 10)
     strain_normal = 0.25
@@ -183,7 +182,7 @@ def main():
     #move_factor_list = np.linspace(0.05, 1, 20)
     for i in range(0, len(dim_list)):
         #sand_simulation("moveFactorListing/movefactor:{:.2}".format(move_factor_list[i]), type_string, vertical_size, strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor_list[i])
-        sand_simulation("moveFactorListing/size:{}".format(dim_list[i]), type_string, dim_list[i], strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor)
+        sand_simulation("hexDim/dim:{}".format(dim_list[i]), type_string, dim_list[i], strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor)
 
 
 if __name__ == "__main__":

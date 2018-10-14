@@ -22,7 +22,7 @@ def calc_position(h, w, dim):
 def create_points(dim):
 
 	def last_in_even_row(w, h):
-		return w == width-1 and h % 2 == 0
+		return w == dim-1 and h % 2 == 0
 	
 	def surplus_edges_in_first_row(w, h):
 		return h == dim-1 and (w == 0 or w == dim-1)
