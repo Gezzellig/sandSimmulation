@@ -85,25 +85,38 @@ def plot_grid(grid):
     #plot_forces(grid)
 
 
-def prepare_storage(type_string, numPoints):
+def prepare_storage(folder_name):
     base_folder_name = "plots"
     if not os.path.exists(base_folder_name):
         os.makedirs(base_folder_name)
-    folder_name = "{}/{}p{}".format(base_folder_name, type_string, numPoints)
-    if os.path.exists(folder_name):
+    total_folder_name = "{}/{}".format(base_folder_name, folder_name)
+    if os.path.exists(total_folder_name):
         print("The output folder already exists!")
         exit(-1)
-    os.makedirs(folder_name)
-    return folder_name
+    os.makedirs(total_folder_name)
+    return total_folder_name
 
+def write_settings(total_folder_name, type_string, vertical_size, strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor):
+    file = open("{}/runsettings.txt".format(total_folder_name), "w")
+    file.write("type_string: {}\n".format(type_string))
+    file.write("vertical_size: {}\n".format(vertical_size))
+    file.write("strain_normal: {}\n".format(strain_normal))
+    file.write("strain_deviation: {}\n".format(strain_deviation))
+    file.write("min_lambda: {}\n".format(min_lambda))
+    file.write("decrement_step_size: {}\n".format(decrement_step_size))
+    file.write("relax_iterations: {}\n".format(relax_iterations))
+    file.write("mu: {}\n".format(mu))
+    file.write("move_factor: {}\n".format(move_factor))
+    file.close()
 
-def store_plot(folder_name, grid):
-    if folder_name == "":
+def store_plot(total_folder_name, grid):
+    if total_folder_name == "":
         print("Trying to store a plot, but prepare_storage isn't called!")
         exit(-1)
     image_name = "p{}l{:3.3f}".format(len(grid.points), grid.lambda_val).replace(".", "")
     plot_grid(grid)
-    plt.savefig("{}/{}.png".format(folder_name, image_name), bbox_inches="tight")
+    plt.savefig("{}/{}.png".format(total_folder_name, image_name), bbox_inches="tight")
+    plt.close()
 
 
 def show_plot():

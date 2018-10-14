@@ -1,9 +1,12 @@
+import random
+
+import numpy as np
 import sys
 
 import sqaureGrid
 import hexGrid
 from classes import Grid, Point, Spring
-from plot import plot_grid, show_plot, prepare_storage, store_plot
+from plot import plot_grid, show_plot, prepare_storage, store_plot, write_settings
 import math
 
 
@@ -36,7 +39,7 @@ def calc_force(point, lambda_val):
     return -force_x, -force_y
 
 
-def relax_point(point, lambda_val):
+def relax_point(point, lambda_val, mu, move_factor):
     move_x, move_y = calc_force(point, lambda_val)
     if calc_magnitude((move_x, move_y)) > mu:
         x, y = point.position
@@ -63,7 +66,7 @@ def reconnect_grid(grid):
     return springs
 
 
-def relax_grid(grid):
+def relax_grid(grid, mu, move_factor):
     lambda_val = grid.lambda_val
     relaxed_grid = Grid(lambda_val, list(), list(), list())
     for edge_point in grid.edge_points:
@@ -71,14 +74,14 @@ def relax_grid(grid):
         edge_point.add_next_point(new_edge_point)
         relaxed_grid.edge_points.append(new_edge_point)
     for point in grid.points:
-        relaxed_grid.points.append(relax_point(point, lambda_val))
+        relaxed_grid.points.append(relax_point(point, lambda_val, mu, move_factor))
     relaxed_grid.springs = reconnect_grid(grid)
     return relaxed_grid
 
 
-def relax_grid_n_times(grid, n):
+def relax_grid_n_times(grid, n, mu, move_factor):
     for i in range(0, n):
-        grid = relax_grid(grid)
+        grid = relax_grid(grid, mu, move_factor)
     return grid
 
 
@@ -100,12 +103,12 @@ def max_strain_spring(grid):
     return max_rel_strain_spring
 
 
-def spring_break_loop(grid, relax_iterations):
-    relaxed_grid = relax_grid_n_times(grid, relax_iterations)
+def spring_break_loop(grid, relax_iterations, mu, move_factor):
+    relaxed_grid = relax_grid_n_times(grid, relax_iterations, mu, move_factor)
     broken_spring = max_strain_spring(relaxed_grid)
     while broken_spring is not None:
         relaxed_grid.remove_spring(broken_spring)
-        relaxed_grid = relax_grid_n_times(relaxed_grid, relax_iterations)
+        relaxed_grid = relax_grid_n_times(relaxed_grid, relax_iterations, mu, move_factor)
         broken_spring = max_strain_spring(relaxed_grid)
     return relaxed_grid
 
@@ -125,36 +128,61 @@ def decrease_lambda(grid, decrement_step_size):
     return decreased_grid
 
 
-def decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations):
+def decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations, mu, move_factor):
     intermediate_grids = list()
     decreased_grid = decrease_lambda(grid, decrement_step_size)
     while decreased_grid.lambda_val > min_lambda:
         print("Cur lambda= {}".format(decreased_grid.lambda_val))
-        spring_snapped_grid = spring_break_loop(decreased_grid, relax_iterations)
+        spring_snapped_grid = spring_break_loop(decreased_grid, relax_iterations, mu, move_factor)
         intermediate_grids.append(spring_snapped_grid)
         decreased_grid = decrease_lambda(spring_snapped_grid, decrement_step_size)
     return decreased_grid, intermediate_grids
 
 
-mu = 0.005
-move_factor = 0.25
+def sand_simulation(folder_name, type_string, vertical_size, strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor):
+    grid = None
+
+    random.seed(12345)
+
+    if type_string == "square":
+        grid = sqaureGrid.create_sqaure_grid(vertical_size, vertical_size, float(vertical_size)-1.0, strain_normal, strain_deviation)
+    elif type_string == "hex":
+        print("NOT PROPERLY IMPLEMENTED")
+        grid = hexGrid.create_hex_point_grid(vertical_size, 0, 0, strain_normal, strain_deviation)
+
+    if grid == None:
+        print("No grid type was specified, exiting the program")
+        exit(-1)
+    total_folder_name = prepare_storage(folder_name)
+    write_settings(total_folder_name, type_string, vertical_size, strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor)
+
+    print("Starting simulation of: {}".format(total_folder_name))
+
+    #The actual call of the simulation
+    grid, intermediate_grids = decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations, mu, move_factor)
+
+    print("output time of: {}".format(total_folder_name))
+    for inter_grid in intermediate_grids:
+        store_plot(total_folder_name, inter_grid)
+    store_plot(total_folder_name, grid)
 
 
 def main():
+    type_string = "square"
+    #vertical_size = 30
+    vertical_size_list = range(10, 101, 10)
     strain_normal = 0.25
     strain_deviation = 0.15
-    type_string = "sqaure"
-    grid = sqaureGrid.create_sqaure_grid(100, 100, 99.0, strain_normal, strain_deviation)
-    min_lambda = 0.75
-    decrement_step_size = 0.025
+    min_lambda = 0.8
+    decrement_step_size = 0.0125
     relax_iterations = 9
+    mu = 0.005
+    move_factor = 0.3
+    #move_factor_list = np.linspace(0.05, 1, 20)
+    for i in range(0, len(vertical_size_list)):
+        #sand_simulation("moveFactorListing/movefactor:{:.2}".format(move_factor_list[i]), type_string, vertical_size, strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor_list[i])
+        sand_simulation("moveFactorListing/size:{}".format(vertical_size_list[i]), type_string, vertical_size_list[i], strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor)
 
-    folder_name = prepare_storage(type_string, len(grid.points))
-    grid, intermediate_grids = decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations)
-    print("PLOT TIME")
-    for inter_grid in intermediate_grids:
-        store_plot(folder_name, inter_grid)
-    store_plot(folder_name, grid)
 
 if __name__ == "__main__":
     main()
