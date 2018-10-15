@@ -30,9 +30,9 @@ def create_points(dim):
 	return [[Point(calc_position(h, w, dim)) for w in range(0, dim) if not last_in_even_row(w,h) ] for h in range(0, dim)]
 
 
-def link_points(dim, strain_normal, strain_deviation, points_grid):
+def link_points(dim, springconstant_normal, springconstant_deviation, strain_normal, strain_deviation, points_grid):
 	def spr(a, b):
-		return create_new_spring(1.0, strain_normal, strain_deviation, a, b)
+		return create_new_spring(springconstant_normal, springconstant_deviation, strain_normal, strain_deviation, a, b)
 		
 	springs = []
 	# Diagonal springs
@@ -48,11 +48,11 @@ def link_points(dim, strain_normal, strain_deviation, points_grid):
 	return springs
 
 
-def create_hex_point_grid(dim, strain_normal, strain_deviation):
+def create_hex_point_grid(dim, springconstant_normal, springconstant_deviation, strain_normal, strain_deviation):
 	start_lambda = 1
 	
 	points_grid = create_points(dim)
-	springs = link_points(dim, strain_normal, strain_deviation, points_grid)
+	springs = link_points(dim, springconstant_normal, springconstant_deviation, strain_normal, strain_deviation, points_grid)
 
 	points = []
 	for h in range(1, len(points_grid)-1):

@@ -25,23 +25,22 @@ def out_bounds(h, w, dim):
 	return h < 0 or w < 0 or h >= dim or w >= dim 
 
 
-def create_spring_with_check(h, w, dim, strain_normal, strain_deviation, point, points_grid):
-	springconstant = 1.0
+def create_spring_with_check(h, w, dim, springconstant_normal, springconstant_deviation, strain_normal, strain_deviation, point, points_grid):
 	if not out_bounds(h, w, dim):
-		return create_new_spring(springconstant, strain_normal, strain_deviation, point, points_grid[h][w])
+		return create_new_spring(springconstant_normal, springconstant_deviation, strain_normal, strain_deviation, point, points_grid[h][w])
 
 
-def link_points(dim, strain_normal, strain_deviation, points_grid):
+def link_points(dim, springconstant_normal, springconstant_deviation, strain_normal, strain_deviation, points_grid):
 	springs = list()
 	for h in range(1, dim-1):
 		point = points_grid[h][0]
-		spring = create_spring_with_check(h, 1, dim, strain_normal, strain_deviation, point, points_grid)
+		spring = create_spring_with_check(h, 1, dim, springconstant_normal, springconstant_deviation, strain_normal, strain_deviation, point, points_grid)
 		if not spring is None:
 			springs.append(spring)
 			
 	for w in range(1, dim-1):
 		point = points_grid[0][w]
-		spring = create_spring_with_check(1, w, dim, strain_normal, strain_deviation, point, points_grid)
+		spring = create_spring_with_check(1, w, dim, springconstant_normal, springconstant_deviation, strain_normal, strain_deviation, point, points_grid)
 		if not spring is None:
 			springs.append(spring)
 	
@@ -49,16 +48,16 @@ def link_points(dim, strain_normal, strain_deviation, points_grid):
 	for h in range(1, dim-1):
 		for w in range(1, dim-1):
 			point = points_grid[h][w]
-			spring = create_spring_with_check(h+1, w, dim, strain_normal, strain_deviation, point, points_grid)
+			spring = create_spring_with_check(h+1, w, dim, springconstant_normal, springconstant_deviation, strain_normal, strain_deviation, point, points_grid)
 			if not spring is None:
 				springs.append(spring)
-			spring = create_spring_with_check(h, w+1, dim, strain_normal, strain_deviation, point, points_grid)
+			spring = create_spring_with_check(h, w+1, dim, springconstant_normal, springconstant_deviation, strain_normal, strain_deviation, point, points_grid)
 			if not spring is None:
 				springs.append(spring)
 	return springs
 
 
-def create_square_grid(dim, strain_normal, strain_deviation):
+def create_square_grid(dim, springconstant_normal, springconstant_deviation, strain_normal, strain_deviation):
 	# width = dim
 	# height = dim
 	# field_size = dim - 1.0
@@ -67,7 +66,7 @@ def create_square_grid(dim, strain_normal, strain_deviation):
 	start_lambda = 1
 	
 	points_grid = create_points(dim)
-	springs = link_points(dim, strain_normal, strain_deviation, points_grid)
+	springs = link_points(dim, springconstant_normal, springconstant_deviation, strain_normal, strain_deviation, points_grid)
 	points = list()
 	for h in range(1, len(points_grid)-1):
 		for w in range(1, len(points_grid[h])-1):

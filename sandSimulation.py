@@ -6,7 +6,7 @@ import sys
 import squareGrid
 import hexGrid
 from classes import Grid, Point, Spring
-from plot import plot_grid, show_plot, prepare_storage, store_plot, write_settings
+from plot import plot_grid, show_plot, prepare_storage, store_plot, write_settings, FolderAllreadyExistsException
 import math
 
 
@@ -139,28 +139,31 @@ def decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations
     return decreased_grid, intermediate_grids
 
 
-def sand_simulation(folder_name, type_string, dim, strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor):
+def sand_simulation(folder_name, type_string, dim, springconstant_normal, springconstant_deviation, strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor):
     grid = None
 
     random.seed(12345)
 
     if type_string == "square":
-        grid = squareGrid.create_square_grid(dim, strain_normal, strain_deviation)
+        grid = squareGrid.create_square_grid(dim, springconstant_normal, springconstant_deviation, strain_normal, strain_deviation)
     elif type_string == "hex":
-        grid = hexGrid.create_hex_point_grid(dim, strain_normal, strain_deviation)
+        grid = hexGrid.create_hex_point_grid(dim, springconstant_normal, springconstant_deviation, strain_normal, strain_deviation)
 
     if grid == None:
         print("No grid type was specified, exiting the program")
-        exit(-1)
-    total_folder_name = prepare_storage(folder_name)
-    write_settings(total_folder_name, type_string, dim, strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor)
+        raise Exception
+    try:
+        total_folder_name = prepare_storage(folder_name)
+        write_settings(total_folder_name, type_string, dim, strain_normal, strain_deviation, min_lambda, decrement_step_size, relax_iterations, mu, move_factor)
 
-    print("Starting simulation of: {}".format(total_folder_name))
+        print("Starting simulation of: {}".format(total_folder_name))
 
-    #The actual call of the simulation
-    grid, intermediate_grids = decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations, mu, move_factor)
+        #The actual call of the simulation
+        grid, intermediate_grids = decrease_lambda_loop(grid, min_lambda, decrement_step_size, relax_iterations, mu, move_factor)
 
-    print("output time of: {}".format(total_folder_name))
-    for inter_grid in intermediate_grids:
-        store_plot(total_folder_name, inter_grid)
-    store_plot(total_folder_name, grid)
+        print("output time of: {}".format(total_folder_name))
+        for inter_grid in intermediate_grids:
+            store_plot(total_folder_name, inter_grid)
+        store_plot(total_folder_name, grid)
+    except FolderAllreadyExistsException:
+        print("The folder already existed for: {} skipping this entry".format(folder_name))

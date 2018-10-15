@@ -48,5 +48,5 @@ class Spring:
 	def __repr__(self):
 		return "{}, {}, {}:{}".format(self.springconstant, self.strain_threshold, self.point1, self.point2)
 
-def create_new_spring(springconstant, strain_normal, strain_deviation, point1, point2):
-	return Spring(springconstant, numpy.random.normal(strain_normal, strain_deviation), point1, point2)
+def create_new_spring(springconstant_normal, springconstant_deviation, strain_normal, strain_deviation, point1, point2):
+	return Spring(numpy.random.normal(springconstant_normal,springconstant_deviation), numpy.random.normal(strain_normal, strain_deviation), point1, point2)

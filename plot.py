@@ -4,6 +4,8 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.collections as mat_col
 
+class FolderAllreadyExistsException(Exception):
+    pass
 
 def get_xs_ys(points):
     xs = list()
@@ -91,8 +93,7 @@ def prepare_storage(folder_name):
         os.makedirs(base_folder_name)
     total_folder_name = "{}/{}".format(base_folder_name, folder_name)
     if os.path.exists(total_folder_name):
-        print("The output folder already exists!")
-        exit(-1)
+        raise FolderAllreadyExistsException("The output folder already exists!")
     os.makedirs(total_folder_name)
     return total_folder_name
 
