@@ -77,7 +77,7 @@ def plot_triangles(ax, grid):
 
 def plot_grid(grid):
     fig, ax = plt.subplots()
-    fig.suptitle("Points:{}, Lambda={:3.3f}".format(len(grid.points), grid.lambda_val))
+    #fig.suptitle("Points:{}, Lambda={:3.3f}".format(len(grid.points), grid.lambda_val))
     #plot_points(grid)
     #plot_springs(grid)
     plot_triangles(ax, grid)
@@ -113,7 +113,7 @@ def store_plot(total_folder_name, grid):
     if total_folder_name == "":
         print("Trying to store a plot, but prepare_storage isn't called!")
         exit(-1)
-    image_name = "p{}l{:3.3f}".format(len(grid.points), grid.lambda_val).replace(".", "")
+    image_name = "lam{:3.3f}".format(grid.lambda_val).replace(".", "")
     plot_grid(grid)
     plt.savefig("{}/{}.png".format(total_folder_name, image_name), bbox_inches="tight")
     plt.close()
