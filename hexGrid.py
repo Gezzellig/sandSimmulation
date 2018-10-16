@@ -15,8 +15,7 @@ def calc_position(h, w, dim):
 	x_pos = w*dx + (0.5*dx if h % 2 == 0 else 0)
 	y_pos = (dim - (h+1))*dy
 
-	# return x_pos + rx, y_pos + ry
-	return x_pos, y_pos
+	return x_pos + rx, y_pos + ry
 
 
 def create_points(dim):
