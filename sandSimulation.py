@@ -183,6 +183,7 @@ def max_strain_spring(grid):
 def spring_break_loop(grid, n, mu, move_factor):
     """
     While a spring keeps breaking relax the grid n times.
+    A spring is 'broken' by simply removing it from the grid.
 
     :param grid: The applicable grid.
     :param n: The amount of times the grid is relaxed when it has to be.
